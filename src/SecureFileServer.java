@@ -32,12 +32,12 @@ public class SecureFileServer {
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
         ) {
-            // Step 1: Receive credentials
+           
             String username = (String) ois.readObject();
             String password = (String) ois.readObject();
             boolean isAuthenticated = username.equals(VALID_USERNAME) && password.equals(VALID_PASSWORD);
 
-            // Step 2: Send auth result
+        
             oos.writeObject(isAuthenticated);
             oos.flush();
 
@@ -47,20 +47,19 @@ public class SecureFileServer {
                 return;
             }
 
-            // Step 3: Send RSA public key
+         
             oos.writeObject(rsaKeyPair.getPublic());
 
-            // Step 4: Receive encrypted AES key
+           
             byte[] encryptedAESKey = (byte[]) ois.readObject();
             byte[] aesKeyBytes = CryptoUtils.decryptRSA(encryptedAESKey, rsaKeyPair.getPrivate());
             SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
 
-            // Step 5: Receive encrypted file
             String fileName = (String) ois.readObject();
             byte[] encryptedFile = (byte[]) ois.readObject();
             byte[] fileData = CryptoUtils.decryptAES(encryptedFile, aesKey);
 
-            // Step 6: Receive and verify hash
+           
             String receivedHash = (String) ois.readObject();
             String computedHash = HashUtils.getSHA256(fileData);
 
