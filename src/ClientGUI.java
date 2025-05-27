@@ -78,7 +78,6 @@ public class ClientGUI {
             }
         });
 
-        // Add components to the GUI
         frame.add(label);
         frame.add(chooseBtn);
         frame.add(fileLabel);
